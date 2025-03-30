@@ -1,5 +1,11 @@
+import MainLayout from '../components/layout/MainLayout';
+
 const MainPage = () => {
-    return <div>블로그 메인 페이지!</div>;
+    return (
+        <MainLayout>
+            <div className="bg-yellow-100 text-blue-600 text-2xl p-4">Tailwind 작동 중인가요?</div>
+        </MainLayout>
+    );
 };
 
 export default MainPage;
