@@ -1,9 +1,10 @@
+import { Outlet } from 'react-router-dom';
 import AdminLayout from '../../components/layout/AdminLayout';
 
 const AdminPage = () => {
     return (
         <AdminLayout>
-            <div>관리자 전용 페이지</div>
+            <Outlet />
         </AdminLayout>
     );
 };
