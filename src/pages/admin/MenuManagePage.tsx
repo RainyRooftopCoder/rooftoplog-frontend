@@ -1,5 +1,5 @@
 // src/pages/admin/MenuManagementPage.tsx
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 type MenuItem = {
     id: string;
@@ -37,17 +37,60 @@ const sampleData: MenuItem[] = [
 
 const MenuManagementPage = () => {
     const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
+    const [isAddingMenu, setIsAddingMenu] = useState(false);
+    const [newMenuName, setNewMenuName] = useState('');
 
     const toggleItem = (id: string) => {
         setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isAddingMenu) {
+            inputRef.current?.focus();
+        }
+    }, [isAddingMenu]);
+
     return (
         <div>
-            <button className="mt-4 text-blue-600 hover:underline flex items-center">
+            <button
+                className="mt-4 text-blue-600 hover:underline flex items-center"
+                onClick={() => setIsAddingMenu(true)}
+            >
                 <span className="text-xl mr-2">＋</span> 메뉴 추가
             </button>
             <p className="text-right text-gray-400 mt-1 text-xs">14 / 500</p>
+            {isAddingMenu && (
+                <div className="mb-2 border rounded bg-white">
+                    <div className="cursor-pointer px-4 py-2 flex items-center justify-between">
+                        <div className="w-full font-semibold flex items-center justify-between">
+                            <span>
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    className="border-bottom px-2 py-1 rounded w-64"
+                                    placeholder="메뉴 이름 입력"
+                                    value={newMenuName}
+                                    onChange={(e) => setNewMenuName(e.target.value)}
+                                />
+                            </span>
+                            <div>
+                                <div className="flex space-x-2">
+                                    <button className="px-2 text-blue-600 rounded hover:bg-blue-100">저장</button>
+                                    <button
+                                        className="px-2 text-red-600 rounded hover:bg-red-100"
+                                        onClick={() => setIsAddingMenu(false)}
+                                    >
+                                        취소
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {sampleData.map((category) => (
                 <div key={category.id} className="mb-2 border rounded bg-white">
                     <div
