@@ -30,7 +30,7 @@ const NavMenu = () => {
     };
 
     useEffect(() => {
-        api.get<MenuItem[]>('/menu').then((res) => {
+        api.get<MenuItem[]>('/menu/guest').then((res) => {
             console.log(res.data);
             setMenuTree(res.data);
         });
