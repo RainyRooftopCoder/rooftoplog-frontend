@@ -1,42 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import api from '../../api/axios';
 
-// type MenuItem = {
-//     menuId: number | null;
-//     parentId: number | null;
-//     name: string;
-//     url: string;
-//     children?: MenuItem[];
-// };
-
-// const sampleData: MenuItem[] = [
-//     {
-//         menuId: '1',
-//         name: '오류 모음',
-//         children: [
-//             { menuId: '1-1', name: 'Java & Spring' },
-//             { menuId: '1-2', name: 'HTML' },
-//             { menuId: '1-3', name: 'CSS' },
-//             { menuId: '1-4', name: 'JavaScript' },
-//             { menuId: '1-5', name: 'Dart & Flutter' },
-//         ],
-//     },
-//     {
-//         menuId: '2',
-//         name: '개인 연습',
-//         children: [{ menuId: '2-1', name: '첫 게시판' }],
-//     },
-//     {
-//         menuId: '3',
-//         name: '정리 모음',
-//         children: [
-//             { menuId: '3-1', name: 'SVN' },
-//             { menuId: '3-2', name: 'Flutter' },
-//             { menuId: '3-3', name: 'Java' },
-//         ],
-//     },
-// ];
-
 type MenuItem = {
     menuId: number;
     parentId: number | null;
@@ -45,14 +9,23 @@ type MenuItem = {
 };
 
 const MenuManagementPage = () => {
-    // const [openItems, setOpenItems] = useState<{ [key: number | null]: boolean }>({});
     const [isAddingMenu, setIsAddingMenu] = useState(false);
-    const [newMenuName, setNewMenuName] = useState('');
-    const [isAdmin, setIsAdmin] = useState('N');
+    const [editingMenu, setEditingMenu] = useState(false);
 
-    // const toggleItem = (menuId: number | null) => {
-    //     setOpenItems((prev) => ({ ...prev, [menuId]: !prev[menuId] }));
-    // };
+    const [newMenuName, setNewMenuName] = useState('');
+    const [newParentId, setNewParentId] = useState<number | null>(null);
+    const [isAdmin, setIsAdmin] = useState('N');
+    const [newUrl, setNewUrl] = useState('');
+    const [newIsActive, setNewIsActive] = useState('Y');
+    const [newIsDelete, setNewIsDelete] = useState('N');
+
+    const [editingMenuId, setEditingMenuId] = useState<number | null>(null);
+    const [editMenuName, setEditMenuName] = useState('');
+    const [editParentId, setEditParentId] = useState<number | null>(null);
+    const [editIsAdmin, setEditIsAdmin] = useState('N');
+    const [editUrl, setEditUrl] = useState('');
+    const [editIsActive, setEditIsActive] = useState('Y');
+    const [editIsDelete, setEditIsDelete] = useState('N');
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -85,58 +58,111 @@ const MenuManagementPage = () => {
         }));
 
     const saveNewMenu = async () => {
-        try {
-            if (!newMenuName) {
-                return alert('메뉴이름을 입력해주세요.');
+        if (confirm('저장 하시겠습니까?')) {
+            try {
+                if (!newMenuName) {
+                    return alert('메뉴이름을 입력해주세요.');
+                }
+
+                const response = await api.post('/menu', {
+                    name: newMenuName,
+                    parentId: newParentId,
+                    url: newUrl,
+                    isAdmin: isAdmin,
+                    isActive: newIsActive,
+                    isDeleted: newIsDelete,
+                });
+
+                console.log('/* 성공 */');
+                console.log(response.data);
+
+                if (response.status === 200) {
+                    alert('저장 하였습니다.');
+                } else {
+                    return alert('저장 실패하였습니다.');
+                }
+
+                const res = await api.get<MenuItem[]>('/menu/admin');
+                setMenuTree(res.data);
+
+                setNewMenuName('');
+                setIsAddingMenu(false);
+                setNewParentId(null);
+                setNewUrl('');
+                setIsAdmin('N');
+                setNewIsActive('Y');
+                setNewIsDelete('N');
+            } catch (err) {
+                alert('저장 실패\n' + err);
             }
+        }
+    };
 
-            const response = await api.post('/menu', {
-                name: newMenuName,
-                parentId: null,
-                url: '',
-                isAdmin: isAdmin,
-            });
+    const saveEditMenu = async () => {
+        if (!editingMenuId) return alert('수정할 메뉴가 없습니다.');
+        if (!editMenuName) return alert('메뉴 이름을 입력해주세요.');
 
-            console.log('/* 성공 */');
-            console.log(response.data);
+        if (confirm('수정 하시겠습니까?')) {
+            try {
+                const response = await api.put('/menu', {
+                    menuId: editingMenuId,
+                    name: editMenuName,
+                    parentId: editParentId,
+                    url: editUrl,
+                    isAdmin: editIsAdmin,
+                    isActive: editIsActive,
+                    isDeleted: editIsDelete,
+                });
 
-            if (response.status === 200) {
-                alert('저장 하였습니다.');
-            } else {
-                return alert('저장 실패하였습니다.');
+                console.log('수정 성공', response.data);
+
+                if (response.status === 200) {
+                    alert('수정 완료되었습니다.');
+                } else {
+                    alert('수정 실패했습니다.');
+                }
+
+                // 수정 후 목록 다시 불러오기
+                const res = await api.get<MenuItem[]>('/menu/admin');
+                setMenuTree(res.data);
+
+                setEditingMenu(false);
+                setEditingMenuId(null);
+                setEditMenuName('');
+                setEditParentId(null);
+                setEditIsAdmin('N');
+                setEditUrl('');
+                setEditIsActive('Y');
+                setEditIsDelete('N');
+            } catch (error) {
+                alert('수정 실패\n' + error);
             }
-
-            const res = await api.get<MenuItem[]>('/menu/admin');
-            setMenuTree(res.data);
-
-            setNewMenuName('');
-            setIsAddingMenu(false);
-        } catch (err) {
-            alert('저장 실패\n' + err);
         }
     };
 
     const deleteBoard = async (menuId: number) => {
-        try {
-            const response = await api.delete('/menu', {
-                data: {
-                    menuId: menuId,
-                },
-            });
+        if (confirm('삭제 하시겠습니까?')) {
+            try {
+                const response = await api.delete('/menu', {
+                    data: {
+                        menuId: menuId,
+                    },
+                });
 
-            console.log('/* 성공 */');
-            console.log(response.data);
+                console.log('/* 성공 */');
+                console.log(response.data);
 
-            if (response.status === 200) {
-                alert('삭제 하였습니다.');
-            } else {
-                return alert('삭제 실패하였습니다.');
+                if (response.status === 200) {
+                    alert('삭제 하였습니다.');
+                } else {
+                    return alert('삭제 실패하였습니다.');
+                }
+
+                const res = await api.get<MenuItem[]>('/menu/admin');
+                setMenuTree(res.data);
+            } catch (err) {
+                alert('저장 실패\n' + err);
             }
-
-            const res = await api.get<MenuItem[]>('/menu/admin');
-            setMenuTree(res.data);
-        } catch (err) {
-            alert('저장 실패\n' + err);
         }
     };
 
@@ -193,30 +219,72 @@ const MenuManagementPage = () => {
             )}
             {grouped.map((board) => (
                 <div key={board.menuId} className="mb-2 border rounded bg-white">
-                    <div
-                        className="cursor-pointer px-4 py-2 flex items-center justify-between hover:bg-gray-100"
-                        onClick={() => toggleBoard(board.menuId)}
-                    >
-                        <div className="w-full font-semibold flex items-center justify-between">
-                            <span>
-                                {openBoards[board.menuId] ? '▾' : '▸'} {board.name}
-                                <span className="text-gray-400">({board.children?.length || 0})</span>
-                            </span>
-                            <div>
-                                <div className="flex space-x-2">
-                                    <button className="px-2 rounded hover:bg-gray-200">하위메뉴 추가</button>
-                                    <button className="px-2 text-blue-600 rounded hover:bg-blue-100">수정</button>
-                                    <button
-                                        className="px-2 text-red-600 rounded hover:bg-red-100"
-                                        onClick={() => {
-                                            deleteBoard(board.menuId);
-                                        }}
+                    <div className="cursor-pointer px-4 py-2 flex items-center justify-between hover:bg-gray-100">
+                        {editingMenu && editingMenuId === board.menuId ? (
+                            <div className="w-full font-semibold flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="text"
+                                        className="border-b px-2 py-1 rounded w-64"
+                                        value={editMenuName}
+                                        onChange={(e) => setEditMenuName(e.target.value)}
+                                    />
+                                    <select
+                                        className="border-b px-2 py-1 rounded w-64"
+                                        value={editIsAdmin}
+                                        onChange={(e) => setEditIsAdmin(e.target.value)}
                                     >
-                                        삭제
-                                    </button>
+                                        <option value="N">게스트</option>
+                                        <option value="Y">관리자</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div className="flex space-x-2">
+                                        <button
+                                            className="px-2 text-blue-600 rounded hover:bg-blue-100"
+                                            onClick={saveEditMenu}
+                                        >
+                                            저장
+                                        </button>
+                                        <button
+                                            className="px-2 text-red-600 rounded hover:bg-red-100"
+                                            onClick={() => setEditingMenu(false)}
+                                        >
+                                            취소
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="w-full font-semibold flex items-center justify-between">
+                                <span onClick={() => toggleBoard(board.menuId)}>
+                                    {openBoards[board.menuId] ? '▾' : '▸'} {board.name}
+                                    <span className="text-gray-400">({board.children?.length || 0})</span>
+                                </span>
+                                <div>
+                                    <div className="flex space-x-2">
+                                        <button className="px-2 rounded hover:bg-gray-200">하위메뉴 추가</button>
+                                        <button
+                                            className="px-2 text-blue-600 rounded hover:bg-blue-100"
+                                            onClick={() => {
+                                                setEditingMenuId(board.menuId);
+                                                setEditingMenu(true);
+                                            }}
+                                        >
+                                            수정
+                                        </button>
+                                        <button
+                                            className="px-2 text-red-600 rounded hover:bg-red-100"
+                                            onClick={() => {
+                                                deleteBoard(board.menuId);
+                                            }}
+                                        >
+                                            삭제
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     {openBoards[board.menuId] && (
                         <ul className="pl-6 pr-4 py-2 space-y-1 border-t">
@@ -247,48 +315,6 @@ const MenuManagementPage = () => {
                     )}
                 </div>
             ))}
-            {/* {grouped.map((category) => (
-                <div key={category.menuId} className="mb-2 border rounded bg-white">
-                    <div
-                        className="cursor-pointer px-4 py-2 flex items-center justify-between hover:bg-gray-100"
-                        onClick={() => toggleItem(category.menuId)}
-                    >
-                        <div className="w-full font-semibold flex items-center justify-between">
-                            <span>
-                                {openItems[category.menuId] ? '▾' : '▸'} {category.name}
-                                <span className="text-gray-400">({category.children?.length || 0})</span>
-                            </span>
-                            <div>
-                                <div className="flex space-x-2">
-                                    <button className="px-2 rounded hover:bg-gray-200">하위메뉴 추가</button>
-                                    <button className="px-2 text-blue-600 rounded hover:bg-blue-100">수정</button>
-                                    <button className="px-2 text-red-600 rounded hover:bg-red-100">삭제</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {openItems[category.menuId] && (
-                        <ul className="pl-6 pr-4 py-2 space-y-1 border-t">
-                            {category.children?.map((item) => (
-                                <li
-                                    key={item.menuId}
-                                    className="py-2 border-b border-gray-200 last:border-b-0 hover:text-blue-600"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <span>{item.name}</span>{' '}
-                                        <div className="flex justify-end space-x-2">
-                                            <button className="px-2 text-blue-600 rounded hover:bg-blue-100">
-                                                수정
-                                            </button>
-                                            <button className="px-2 text-red-600 rounded hover:bg-red-100">삭제</button>
-                                        </div>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            ))} */}
         </div>
     );
 };
