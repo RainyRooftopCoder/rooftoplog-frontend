@@ -314,21 +314,30 @@ const MenuManagementPage = () => {
                                 >
                                     <div className="flex items-center justify-between">
                                         {editingMenu && editingMenuId === item.menuId ? (
-                                            <div className="flex items-center space-x-2 w-full">
-                                                <input
-                                                    type="text"
-                                                    className="border-b px-2 py-1 rounded w-64"
-                                                    value={editMenuName}
-                                                    onChange={(e) => setEditMenuName(e.target.value)}
-                                                />
-                                                <select
-                                                    className="border px-2 py-1 rounded w-64"
-                                                    value={editIsAdmin}
-                                                    onChange={(e) => setEditIsAdmin(e.target.value)}
-                                                >
-                                                    <option value="N">게스트</option>
-                                                    <option value="Y">관리자</option>
-                                                </select>
+                                            <div className="flex justify-between items-center space-x-2 w-full">
+                                                <div className="flex justify-between">
+                                                    <input
+                                                        type="text"
+                                                        className="border-b px-2 py-1 rounded w-64"
+                                                        value={editMenuName}
+                                                        onChange={(e) => setEditMenuName(e.target.value)}
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        className="border-b px-2 py-1 rounded w-64"
+                                                        placeholder="URL[/admin/menu]"
+                                                        value={editUrl}
+                                                        onChange={(e) => setNewUrl(e.target.value)}
+                                                    />
+                                                    <select
+                                                        className="border px-2 py-1 rounded w-64"
+                                                        value={editIsAdmin}
+                                                        onChange={(e) => setEditIsAdmin(e.target.value)}
+                                                    >
+                                                        <option value="N">게스트</option>
+                                                        <option value="Y">관리자</option>
+                                                    </select>
+                                                </div>
                                                 <div className="flex space-x-2 ml-auto">
                                                     <button
                                                         className="px-2 text-blue-600 rounded hover:bg-blue-100"
@@ -378,20 +387,22 @@ const MenuManagementPage = () => {
                             {addingSubMenuId === board.menuId && (
                                 <li className="py-2 border-b border-gray-200 bg-gray-50">
                                     <div className="flex items-center justify-between">
-                                        <input
-                                            type="text"
-                                            className="border-b px-2 py-1 rounded w-64"
-                                            placeholder="메뉴 이름"
-                                            value={subMenuName}
-                                            onChange={(e) => setSubMenuName(e.target.value)}
-                                        />
-                                        <input
-                                            type="text"
-                                            className="border-b px-2 py-1 rounded w-64"
-                                            placeholder="URL[/admin/menu]"
-                                            value={newUrl}
-                                            onChange={(e) => setNewUrl(e.target.value)}
-                                        />
+                                        <div>
+                                            <input
+                                                type="text"
+                                                className="border-b px-2 py-1 rounded w-64"
+                                                placeholder="메뉴 이름"
+                                                value={subMenuName}
+                                                onChange={(e) => setSubMenuName(e.target.value)}
+                                            />
+                                            <input
+                                                type="text"
+                                                className="border-b px-2 py-1 rounded w-64"
+                                                placeholder="URL[/admin/menu]"
+                                                value={newUrl}
+                                                onChange={(e) => setNewUrl(e.target.value)}
+                                            />
+                                        </div>
                                         <div className="flex space-x-2">
                                             <button
                                                 className="px-2 text-blue-600 rounded hover:bg-blue-100"
