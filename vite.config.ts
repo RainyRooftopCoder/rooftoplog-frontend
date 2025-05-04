@@ -9,7 +9,7 @@ export default defineConfig({
         open: true,
         proxy: {
             '/api': {
-                target: 'http://local.rooftoplog.com:8236',
+                target: 'http://localhost:8236',
                 changeOrigin: true,
                 rewrite: (path) => path,
             },
