@@ -19,6 +19,7 @@ type MenuItem = {
     menuId: number;
     parentId: number | null;
     name: string;
+    url: string;
 };
 
 const NavMenu = () => {
@@ -66,15 +67,20 @@ const NavMenu = () => {
                                 <ul className="pl-4 mt-1 space-y-1">
                                     {board.children.map((child) => (
                                         <li key={child.menuId} className="hover:text-blue-500 cursor-pointer">
-                                            📄 {child.name}
+                                            <a href={child.url} className="hover:text-blue-500">
+                                                📄 {child.name}
+                                            </a>
                                         </li>
                                     ))}
                                 </ul>
                             )}
                         </li>
                     ))}
-
-                    <li className="hover:text-blue-600 cursor-pointer">💬 방명록</li>
+                    <li className="hover:text-blue-600 cursor-pointer">
+                        <a href={'/guestbook'} className="hover:text-blue-500">
+                            💬 방명록
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

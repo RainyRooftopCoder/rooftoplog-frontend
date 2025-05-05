@@ -19,7 +19,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
             </div>
 
             {/* 본문 */}
-            <main className="flex-1 p-6 m-4 bg-yellow-100">{children}</main>
+            <main className="flex-1 p-6 m-4">{children}</main>
 
             {/* 푸터 */}
             <footer className="bg-gray-200 p-4 text-sm text-center">ⓒ 2025 Rooftoplog</footer>
