@@ -131,6 +131,7 @@ const GuestbookPage = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <span className="font-semibold pr-2">{g.author}</span>
+                                {/*                                 
                                 <button
                                     className="px-2 text-blue-600 rounded hover:bg-blue-100"
                                     onClick={() => {
@@ -155,11 +156,11 @@ const GuestbookPage = () => {
                                 >
                                     삭제
                                 </button>
+                                 */}
                             </div>
                             <span className="text-sm text-gray-500">{g.createdAt}</span>
                         </div>
                         <p className="my-2">{g.content}</p>
-                        <button className="text-sm text-blue-500 hover:underline">▸ 댓글(0)</button>
                     </li>
                 ))}
             </ul>

@@ -7,20 +7,23 @@ import MenuManagePage from '../pages/admin/MenuManagePage';
 import LoginPage from '../pages/admin/LoginPage';
 import PrivateRoute from '../components/adminLayout/PrivateRoute';
 import GuestbookPage from '../pages/geust/guestbookPage';
+import PostsPage from '../pages/post/PostsPage';
 
 const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<MainPage />}>
                 <Route path="guestbook" element={<GuestbookPage />} />
+                <Route path="post/:boardId" element={<PostsPage />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
 
             <Route path="admin" element={<PrivateRoute />}>
                 <Route element={<AdminPage />}>
                     <Route index element={<Dashboard />} />
-                    <Route path="post/create" element={<PostCreatePage />} />
+                    <Route path="board/create" element={<PostCreatePage />} />
                     <Route path="menu" element={<MenuManagePage />} />
+                    <Route path="post/:boardId" element={<PostsPage />} />
                 </Route>
             </Route>
         </Routes>

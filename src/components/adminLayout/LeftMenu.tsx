@@ -66,7 +66,7 @@ const LeftMenu = () => {
                                 <ul className="pl-4 mt-1 space-y-1">
                                     {board.children.map((child, idx) => (
                                         <li key={idx}>
-                                            <a href={child.url} className="hover:text-blue-500">
+                                            <a href={'/admin' + child.url} className="hover:text-blue-500">
                                                 📄 {child.name}
                                             </a>
                                         </li>

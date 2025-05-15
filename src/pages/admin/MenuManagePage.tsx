@@ -327,7 +327,7 @@ const MenuManagementPage = () => {
                                                         className="border-b px-2 py-1 rounded w-64"
                                                         placeholder="URL[/admin/menu]"
                                                         value={editUrl}
-                                                        onChange={(e) => setNewUrl(e.target.value)}
+                                                        onChange={(e) => setEditUrl(e.target.value)}
                                                     />
                                                     <select
                                                         className="border px-2 py-1 rounded w-64"
